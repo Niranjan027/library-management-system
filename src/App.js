@@ -1,43 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import BookStatus from "./pages/BookStatus";
 import Generous from "./pages/Generous";
 import Profile from "./pages/Profile";
+import BookDetails from "./pages/BookDetails";
+import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
-import booksData from "./data/BookData";
+import { getAllBooks, borrowBook as apiBorrowBook } from "./services/api";
 import "./styles/App.css";
 
-/* ---------- Helper: add 1 month ---------- */
-const addOneMonth = (date) => {
-  const d = new Date(date);
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().split("T")[0];
-};
+
 
 function App() {
   const [user, setUser] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [page, setPage] = useState("home");
-  const [books, setBooks] = useState(booksData);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Default open for better UI
+  const [books, setBooks] = useState([]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  const fetchBooks = async () => {
+    try {
+      const data = await getAllBooks();
+      setBooks(data);
+    } catch (error) {
+      console.error("Failed to fetch books", error);
+    }
+  };
 
   /* ---------- Borrow Book ---------- */
-  const borrowBook = (id) => {
-    const today = new Date().toISOString().split("T")[0];
-
-    setBooks((prevBooks) =>
-      prevBooks.map((book) =>
-        book.id === id && book.available
-          ? {
-              ...book,
-              available: false,
-              borrowedBy: user.username,
-              endDate: addOneMonth(today),
-            }
-          : book
-      )
-    );
+  const borrowBook = async (id) => {
+    try {
+      await apiBorrowBook(id, user.id);
+      fetchBooks(); // Refresh list
+      alert("Book borrowed successfully for 1 month!");
+    } catch (error) {
+      console.error("Failed to borrow book", error);
+      alert("Failed to borrow book");
+    }
   };
 
   /* ---------- Login First ---------- */
@@ -46,29 +50,28 @@ function App() {
   }
 
   return (
-    <>
-      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+    <Router>
+      <div className="app-container">
+        <Sidebar
+          open={sidebarOpen}
+          closeSidebar={() => setSidebarOpen(false)}
+        />
 
-      <Sidebar
-        open={sidebarOpen}
-        setPage={setPage}
-        closeSidebar={() => setSidebarOpen(false)}
-      />
+        <div className="content" style={{ marginLeft: sidebarOpen ? '260px' : '0' }}>
+          <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className="content">
-        {page === "home" && (
-          <Home books={books} user={user} borrowBook={borrowBook} />
-        )}
-
-        {page === "status" && (
-          <BookStatus books={books} user={user} />
-        )}
-
-        {page === "generous" && <Generous />}
-
-        {page === "profile" && <Profile user={user} />}
+          <Routes>
+            <Route path="/" element={<Home books={books} user={user} borrowBook={borrowBook} />} />
+            <Route path="/status" element={<BookStatus books={books} user={user} />} />
+            <Route path="/generous" element={<Generous />} />
+            <Route path="/profile" element={<Profile user={user} />} />
+            <Route path="/book/:id" element={<BookDetails user={user} />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
       </div>
-    </>
+    </Router>
   );
 }
 

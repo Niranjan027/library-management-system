@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthNavbar from "../components/AuthNavbar";
+import { createUser, getAllUsers } from "../services/api";
 import "../styles/App.css";
 
 function Login({ setUser }) {
@@ -18,33 +19,47 @@ function Login({ setUser }) {
   /* ---------- VALIDATIONS ---------- */
   const isValidName = /^[A-Za-z ]+$/.test(form.name);
   const isValidEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(form.email);
-  const isValidCard = /^[0-9]{6,10}$/.test(form.card);
+  const isValidPassword = form.password && form.password.length >= 6;
 
-  const handleRegister = () => {
-    if (!isValidName)
-      return alert("Name must contain letters only");
+  const handleRegister = async () => {
+    if (!isValidName) return alert("Name must contain letters only");
+    if (!isValidEmail) return alert("Email must be a valid Gmail address");
+    if (!isValidPassword) return alert("Password must be at least 6 characters");
 
-    if (!isValidEmail)
-      return alert("Email must be a valid Gmail address");
-
-    if (!form.password || !form.card)
-      return alert("All fields are required");
-
-    if (!isValidCard)
-      return alert("Library card must be 6–10 digits");
-
-    alert("Registration Successful! Please login.");
-    setIsRegister(false);
+    try {
+      await createUser({ name: form.name, email: form.email, password: form.password });
+      alert("Registration Successful! Please login.");
+      setIsRegister(false);
+    } catch (error) {
+      console.error("Registration failed", error);
+      alert("Registration failed: " + error.message);
+    }
   };
 
-  const handleLogin = () => {
-    if (!form.name || !form.email)
-      return alert("Please enter username and email");
+  const handleLogin = async () => {
+    if (!form.email || !form.password)
+      return alert("Please enter email and password");
 
-    setUser({
-      username: form.name,
-      role: form.role
-    });
+    try {
+      const users = await getAllUsers();
+      // SECURITY NOTE: In a real app, do NOT check passwords on client side.
+      // Send credentials to backend and get a token. 
+      // This is a temporary demo implementation.
+      const user = users.find(u => u.email === form.email && u.password === form.password);
+
+      if (user) {
+        setUser({
+          id: user.id,
+          username: user.name,
+          role: form.role
+        });
+      } else {
+        alert("Invalid email or password!");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("Login failed");
+    }
   };
 
   return (
@@ -54,11 +69,13 @@ function Login({ setUser }) {
       <div className="auth-box">
         <h2>{isRegister ? "Register" : "Login"}</h2>
 
-        <input
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-        />
+        {isRegister && (
+          <input
+            name="name"
+            placeholder="Name"
+            onChange={handleChange}
+          />
+        )}
 
         <input
           name="email"
@@ -66,21 +83,19 @@ function Login({ setUser }) {
           onChange={handleChange}
         />
 
-        {isRegister && (
-          <>
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              onChange={handleChange}
-            />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
 
-            <input
-              name="card"
-              placeholder="Library Card Number"
-              onChange={handleChange}
-            />
-          </>
+        {isRegister && (
+          <input
+            name="card"
+            placeholder="Library Card Number"
+            onChange={handleChange}
+          />
         )}
 
         <select name="role" onChange={handleChange}>

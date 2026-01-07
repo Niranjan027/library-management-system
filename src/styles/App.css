@@ -1,384 +1,179 @@
 /* ================== GLOBAL ================== */
 body {
-  background: #f4f6f8;
+  background: var(--background);
+  color: var(--text);
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
-button {
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* ================== MAIN NAVBAR ================== */
+/* ================== NAVBAR ================== */
 .navbar {
-  background: #1e293b;
-  color: white;
-  padding: 15px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .hamburger {
-  font-size: 24px;
   cursor: pointer;
-  margin-right: 15px;
+  color: var(--text);
 }
 
 /* ================== SIDEBAR ================== */
 .sidebar {
   position: fixed;
-  top: 60px;
-  left: -220px;
-  width: 200px;
+  top: 0;
+  left: -260px;
+  width: 260px;
   height: 100%;
-  background: #334155;
-  color: white;
-  padding: 20px;
-  transition: 0.3s;
-  z-index: 10;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 2rem;
+  transition: 0.3s ease;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.open {
   left: 0;
 }
 
-.sidebar p {
-  cursor: pointer;
-  margin: 15px 0;
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-.sidebar p:hover {
-  text-decoration: underline;
+.sidebar a:hover,
+.sidebar a.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
 }
 
 /* ================== CONTENT ================== */
 .content {
-  margin-left: 20px;
-  padding: 20px;
+  margin-left: 0;
+  /* Sidebar is overlay or pushed */
+  padding: 2rem;
+  transition: margin-left 0.3s;
 }
 
-.page {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
+@media (min-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+
+  .sidebar.open+.content {
+    margin-left: 260px;
+  }
 }
 
-/* ================== CONTAINER ================== */
-.container {
-  width: 90%;
-  margin: 20px auto;
-  padding: 30px;
-}
-
-/* ================== SEARCH ================== */
-.search-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* ================== ADD BOOK FORM ================== */
-.book-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.book-form input {
-  padding: 8px;
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.book-form button {
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-}
-
-/* ================== BOOK TABLE (ADMIN) ================== */
-.book-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-}
-
-.book-table th,
-.book-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
-.book-table th {
-  background-color: #e5e7eb;
-}
-
-/* ================== BOOK GRID (USER) ================== */
+/* ================== BOOK GRID ================== */
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
 }
 
 .book-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
 }
 
 .book-card img {
   width: 100%;
-  height: 260px;
+  height: 280px;
   object-fit: cover;
+  border-bottom: 1px solid var(--border);
 }
 
 .book-info {
-  padding: 15px;
-  text-align: center;
+  padding: 1.5rem;
 }
 
 .book-info h3 {
-  margin: 5px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .book-info p {
-  margin: 5px 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
-/* ================== BOOK ACTION BUTTONS ================== */
-.book-info button {
-  margin-top: 10px;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-}
-
-.add-btn {
-  background: #2563eb;
-}
-
-.renew-btn {
-  background: #16a34a;
-}
-
-/* ================== BOOK STATUS ================== */
-.borrowed {
-  color: #dc2626;
-  font-weight: bold;
-}
-
-.due {
-  color: #dc2626;
-  font-weight: bold;
-}
-
-/* ================== LOGIN (SIMPLE) ================== */
-.login-container {
-  width: 300px;
-  margin: 100px auto;
-  background: white;
-  padding: 20px;
-  text-align: center;
-  border-radius: 8px;
-}
-
-.login-container input,
-.login-container select,
-.login-container button {
-  width: 100%;
-  padding: 8px;
-  margin: 8px 0;
-}
-
-/* ================== AUTH (LOGIN / REGISTER) ================== */
+/* ================== AUTH PAGES ================== */
 .auth-bg {
-  height: 100vh;
-  background: url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f")
-    no-repeat center/cover;
-}
-
-.auth-navbar {
+  min-height: 100vh;
   display: flex;
-  justify-content: space-between;
-  padding: 15px 30px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-}
-
-.auth-left span {
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-.auth-left .active {
-  font-weight: bold;
-  text-decoration: underline;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  padding: 2rem;
 }
 
 .auth-box {
-  width: 350px;
   background: white;
-  margin: 80px auto;
-  padding: 25px;
-  border-radius: 10px;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+.auth-box h2 {
+  margin-bottom: 2rem;
+  color: var(--text);
+  font-size: 2rem;
 }
 
 .auth-box input,
-.auth-box select,
-.auth-box button {
-  width: 90%;
-  padding: 10px;
-  margin: 10px 0;
+.auth-box select {
+  background: #f8fafc;
+  border-color: #e2e8f0;
 }
 
 .auth-box button {
-  background: #2563eb;
-  color: white;
-  border: none;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 14px;
+  font-size: 1.1rem;
+}
+
+.switch {
+  margin-top: 1.5rem;
+  color: var(--text-muted);
 }
 
 .switch span {
-  color: blue;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-
-.book-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-}
-
-.book-card {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-}
-
-.book-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.book-info {
-  padding: 10px;
-  text-align: center;
-}
-
-.add-btn {
-  margin-top: 8px;
-  font-size: 20px;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  border: none;
-  background: #22c55e;
-  color: white;
-  cursor: pointer;
-}
-
-.borrowed {
-  color: red;
-  font-weight: bold;
-}
-
-
-.book-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-}
-
-.book-card {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-}
-
-.book-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.book-info {
-  padding: 10px;
-  text-align: center;
-}
-
-.add-btn {
-  margin-top: 8px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #22c55e;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.borrowed {
-  color: red;
-  font-weight: bold;
-}
-
-
-.generous-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 25px;
-  margin-top: 20px;
-}
-
-.generous-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  overflow: hidden;
-  text-align: center;
-}
-
-.generous-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.generous-card h3 {
-  margin: 10px 0 5px;
-}
-
-.generous-card p {
-  padding: 0 10px;
-  font-size: 14px;
-}
-
-.generous-card button {
-  margin: 15px;
-  padding: 8px 15px;
-  border: none;
-  background-color: #2563eb;
-  color: white;
-  border-radius: 5px;
+  color: var(--primary);
+  font-weight: 600;
   cursor: pointer;
 }

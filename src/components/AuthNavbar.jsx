@@ -3,7 +3,7 @@ function AuthNavbar({ isRegister, setIsRegister }) {
     <div className="auth-navbar">
       {/* LEFT SIDE → TITLE */}
       <div className="auth-right">
-        📚 Library Management System
+        {/*📚 Library Management System*/}
       </div>
 
       {/* RIGHT SIDE → LOGIN / REGISTER */}
@@ -12,13 +12,13 @@ function AuthNavbar({ isRegister, setIsRegister }) {
           className={!isRegister ? "active" : ""}
           onClick={() => setIsRegister(false)}
         >
-          Login
+          {/*Login*/}
         </span>
         <span
           className={isRegister ? "active" : ""}
           onClick={() => setIsRegister(true)}
         >
-          Register
+          {/*Register*/}
         </span>
       </div>
     </div>
